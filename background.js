@@ -45,6 +45,24 @@ function createHighlightCM() {
             });
         }
     });
+    autoBlockPageCMId = chrome.contextMenus.create({
+        title: 'Auto-block this domain',
+        id: 'autoBlockPageCM',
+        contexts: ['page'],
+        onclick: (info) => {
+            chrome.storage.sync.get(null, function(result) {
+                const host = new URL(info.pageUrl).hostname;
+                const domainRegex = host.replace(/\./g, '\\.');
+
+                const currentDomains = result['auto-enable-site-list'];
+                if (!currentDomains.includes(domainRegex)) {
+                    chrome.storage.sync.set({
+                        'auto-enable-site-list': [...currentDomains, domainRegex],
+                    });
+                }
+            });
+        },
+    });
 }
 function createLinkCM() {
     // Create an entry to allow user to open a given link using Just read
